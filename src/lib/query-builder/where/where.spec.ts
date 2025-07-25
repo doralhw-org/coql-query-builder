@@ -1,3 +1,4 @@
+import { WhereCondition } from "../../types/where";
 import { whereClauseBuilder, WhereClauseBuilderArgs } from "./where";
 
 describe("Where Clause Builder", () => {
@@ -204,6 +205,16 @@ describe("Where Clause Builder", () => {
 
     expect(() => whereClauseBuilder(args)).toThrow(
       "Where clause cannot contain more than 25 conditions"
+    );
+  });
+
+  it("should throw an error if the where clause contains an unknown condition", () => {
+    const args: WhereClauseBuilderArgs = {
+      where: [{ unknown: { column: "name" } } as unknown as WhereCondition],
+    };
+
+    expect(() => whereClauseBuilder(args)).toThrow(
+      "Unknown condition: {\"unknown\":{\"column\":\"name\"}}"
     );
   });
 });

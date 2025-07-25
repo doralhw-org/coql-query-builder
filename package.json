@@ -1,0 +1,17 @@
+{
+  "name": "@doralhw-org/zoho-coql-query-builder",
+  "version": "0.1.0",
+  "description": "A lightweight query builder for Zoho CRM that abstracts the COQL queries and provides a fluent API for building them.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

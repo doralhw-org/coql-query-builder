@@ -42,7 +42,7 @@ export type NotOperator<ModuleType = Record<string, unknown>> = {
 export type EqualsCondition<ModuleType = Record<string, unknown>> = {
   equals: [
     ConditionOperandColumn<ModuleType>,
-    ComparisonConditionOperand<ModuleType> | null
+    NullableComparisonConditionOperand<ModuleType>
   ];
 };
 
@@ -100,6 +100,10 @@ export type ComparisonConditionOperand<ModuleType = Record<string, unknown>> =
   | ConditionOperandColumn<ModuleType>
   | ConditionOperandValue;
 
+export type NullableComparisonConditionOperand<ModuleType = Record<string, unknown>> =
+  | ConditionOperandColumn<ModuleType>
+  | NullableConditionOperandValue;
+
 export type ConditionOperandColumn<ModuleType = Record<string, unknown>> = {
   column: QueryColumn<ModuleType>;
 };
@@ -108,7 +112,13 @@ export type ConditionOperandValue = {
   value: QueryValue;
 };
 
+export type NullableConditionOperandValue = {
+  value: QueryValue | null;
+};
+
 export type QueryValue = string | number | boolean;
+
+export type NullableQueryValue = QueryValue | null;
 
 export type QueryColumn<ModuleType = Record<string, unknown>> =
   FlattenKeys<ModuleType>;

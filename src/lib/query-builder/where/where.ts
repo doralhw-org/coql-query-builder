@@ -112,6 +112,8 @@ const parseCondition = ({
     if ("raw" in conditionToParse) {
       return conditionToParse.raw;
     }
+
+    throw new Error(`Unknown condition: ${JSON.stringify(conditionToParse)}`);
   });
 
   const conditionPartsList = parsedConditions.filter((condition) =>

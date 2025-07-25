@@ -10,6 +10,8 @@ import {
   LessThanCondition,
   LessThanOrEqualCondition,
   LikeCondition,
+  NullableComparisonConditionOperand,
+  NullableQueryValue,
   QueryValue,
 } from "../../types";
 
@@ -71,7 +73,7 @@ type GreaterThanConditionBuilderArgs = {
 export const greaterThanConditionBuilder = ({
   condition,
   not,
-}: GreaterThanConditionBuilderArgs) => {
+}: GreaterThanConditionBuilderArgs): string => {
   if (not) {
     return lessThanOrEqualConditionBuilder({
       condition: {
@@ -93,7 +95,7 @@ type LessThanOrEqualConditionBuilderArgs = {
 export const lessThanOrEqualConditionBuilder = ({
   condition,
   not,
-}: LessThanOrEqualConditionBuilderArgs) => {
+}: LessThanOrEqualConditionBuilderArgs): string => {
   if (not) {
     return greaterThanConditionBuilder({
       condition: {
@@ -115,7 +117,7 @@ type GreaterThanOrEqualConditionBuilderArgs = {
 export const greaterThanOrEqualConditionBuilder = ({
   condition,
   not,
-}: GreaterThanOrEqualConditionBuilderArgs) => {
+}: GreaterThanOrEqualConditionBuilderArgs): string => {
   if (not) {
     return lessThanConditionBuilder({
       condition: {
@@ -139,7 +141,7 @@ type BetweenConditionBuilderArgs = {
 export const betweenConditionBuilder = ({
   condition,
   not,
-}: BetweenConditionBuilderArgs) => {
+}: BetweenConditionBuilderArgs): string => {
   const {
     column,
     valueRange: [firstOperand, secondOperand],
@@ -227,7 +229,7 @@ export const likeConditionBuilder = ({
 
 /* Operand Parsing */
 
-export const parseOperand = (operand: ComparisonConditionOperand) => {
+export const parseOperand = (operand: ComparisonConditionOperand | NullableComparisonConditionOperand) => {
   if ("column" in operand) {
     return `${operand.column}`;
   }
@@ -235,7 +237,7 @@ export const parseOperand = (operand: ComparisonConditionOperand) => {
   return parseQueryValue(operand.value);
 };
 
-export const parseQueryValue = (value: QueryValue) => {
+export const parseQueryValue = (value: QueryValue | NullableQueryValue) => {
   if (typeof value === "string") {
     if (value.startsWith("'") && value.endsWith("'")) {
       return value;

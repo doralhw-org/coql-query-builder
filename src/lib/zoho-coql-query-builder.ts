@@ -70,7 +70,7 @@ export class ZohoCoqlQueryBuilder {
     // Deduplication and partial record merging
     const recordDictionary = responsesData.reduce<Record<string, RecordType>>(
       (acc, currentRecord) => {
-        acc[currentRecord.id] = { ...acc[currentRecord.id], ...currentRecord };
+        acc[currentRecord.id!] = { ...acc[currentRecord.id!], ...currentRecord };
 
         return acc;
       },

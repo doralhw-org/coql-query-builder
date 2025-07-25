@@ -2,16 +2,69 @@
   "name": "@doralhw-org/zoho-coql-query-builder",
   "version": "0.1.0",
   "description": "A lightweight query builder for Zoho CRM that abstracts the COQL queries and provides a fluent API for building them.",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "repository": {
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "type": "git",
+    "url": "https://github.com/doralhw-org/zoho-coql-query-builder.git"
   },
-  "keywords": [],
+  "homepage": "https://github.com/doralhw-org/zoho-coql-query-builder#readme",
+  "bugs": {
+    "url": "https://github.com/doralhw-org/zoho-coql-query-builder/issues"
+  },
+  "scripts": {
+    "build": "pnpm run clean && tsc -p tsconfig.build.json",
+    "clean": "rimraf dist",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "prepublishOnly": "pnpm run build && pnpm test",
+    "prepack": "pnpm run build"
+  },
+  "keywords": [
+    "zoho",
+    "crm",
+    "coql",
+    "query-builder",
+    "typescript",
+    "zoho-crm",
+    "query",
+    "builder"
+  ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "@types/jest": "^30.0.0 ",
+    "@types/node": "^24.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^9.32.0",
+    "globals": "^16.3.0",
+    "jest": "30.0.5",
+    "rimraf": "^6.0.1",
+    "ts-jest": "^29.4.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

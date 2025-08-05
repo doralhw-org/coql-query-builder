@@ -6,7 +6,7 @@
     "sourceMap": true,
     "outDir": "./dist"
   },
-  "include": ["src/**/*"],
+  "include": ["lib/**/*"],
   "exclude": [
     "node_modules",
     "dist",

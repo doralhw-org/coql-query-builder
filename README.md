@@ -62,6 +62,10 @@ const queries = ZohoCoqlQueryBuilder.buildQuery({
 });
 ```
 
+## Documentation
+
+For comprehensive documentation including detailed usage patterns, limitations, and workarounds for each query clause, see the [Query Builder Documentation](./lib/query-builder/README.md).
+
 ### Where Conditions
 
 The available where conditions are:
@@ -97,3 +101,5 @@ where: [
   },
 ];
 ```
+
+For detailed information about where clause structure, limitations, and workarounds, see the [Where Clause section](./lib/query-builder/README.md#where-clause) in the full documentation.

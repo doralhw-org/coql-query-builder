@@ -1,4 +1,4 @@
-import { queryBuilder } from "./query-builder/query-builder";
+import { queryBuilder } from "./query-builder";
 import { SelectQuery } from "./types/query";
 import { ZohoCrmCoqlQueryFunction, ZohoCrmCoqlRecord } from "./types/zoho";
 

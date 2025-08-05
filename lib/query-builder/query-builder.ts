@@ -1,11 +1,14 @@
-import { SelectQuery } from "../types";
+import { QueryBuilderConfiguration, SelectQuery } from "../types";
 import { groupByClauseBuilder } from "./group-by/group-by";
 import { limitClauseBuilder, paginationClauseBuilder } from "./limit/limit";
 import { orderByClauseBuilder } from "./order-by/order-by";
 import { selectClauseBuilder } from "./select/select";
 import { whereClauseBuilder } from "./where/where";
 
-export const queryBuilder = (query: SelectQuery): string[] => {
+export const queryBuilder = (
+  query: SelectQuery,
+  config?: QueryBuilderConfiguration
+): string[] => {
   const groupByClause = groupByClauseBuilder({
     groupBy: query.groupBy,
   });
@@ -13,7 +16,10 @@ export const queryBuilder = (query: SelectQuery): string[] => {
   const selectClauses = selectClauseBuilder({
     columns: query.columns,
     from: query.from,
-    groupByClauseExists: !!groupByClause,
+    config: {
+      groupByClauseExists: Boolean(groupByClause),
+      automaticColumnAliasing: config?.automaticColumnAliasing ?? "none",
+    },
   });
 
   const whereClauses = whereClauseBuilder({

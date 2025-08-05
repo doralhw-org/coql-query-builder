@@ -1,9 +1,10 @@
 import { queryBuilder } from "./query-builder";
-import { SelectQuery } from "./types/query";
+import { QueryBuilderConfiguration, SelectQuery } from "./types/query";
 import { ZohoCrmCoqlQueryFunction, ZohoCrmCoqlRecord } from "./types/zoho";
 
-type ZohoCoqlQueryBuilderOptions = {
+type ZohoCoqlQueryBuilderArgs = {
   queryFunction: ZohoCrmCoqlQueryFunction;
+  config?: QueryBuilderConfiguration;
 };
 
 /**
@@ -27,9 +28,11 @@ type ZohoCoqlQueryBuilderOptions = {
  */
 export class ZohoCoqlQueryBuilder {
   private readonly queryFunction: ZohoCrmCoqlQueryFunction;
+  private readonly config?: QueryBuilderConfiguration;
 
-  constructor(options: ZohoCoqlQueryBuilderOptions) {
-    this.queryFunction = options.queryFunction;
+  constructor(args: ZohoCoqlQueryBuilderArgs) {
+    this.queryFunction = args.queryFunction;
+    this.config = args.config;
   }
 
   /**
@@ -50,8 +53,8 @@ export class ZohoCoqlQueryBuilder {
   async select<
     ModuleType extends ZohoCrmCoqlRecord = ZohoCrmCoqlRecord,
     RecordType extends Partial<ZohoCrmCoqlRecord> = ZohoCrmCoqlRecord
-  >(query: SelectQuery<ModuleType>): Promise<RecordType[]> {
-    const coqlQueries = ZohoCoqlQueryBuilder.buildQuery(query);
+  >(query: SelectQuery<ModuleType>, config?: QueryBuilderConfiguration): Promise<RecordType[]> {
+    const coqlQueries = this.buildQuery(query, config);
 
     const responses = await Promise.all(
       coqlQueries.map((coqlQuery) => this.queryFunction<RecordType>(coqlQuery))
@@ -96,9 +99,15 @@ export class ZohoCoqlQueryBuilder {
    * @param query - The query to build
    * @returns An array of COQL queries
    */
-  static buildQuery<ModuleType extends ZohoCrmCoqlRecord = ZohoCrmCoqlRecord>(
-    query: SelectQuery<ModuleType>
+  buildQuery<ModuleType extends ZohoCrmCoqlRecord = ZohoCrmCoqlRecord>(
+    query: SelectQuery<ModuleType>,
+    config?: QueryBuilderConfiguration
   ): string[] {
-    return queryBuilder(query as SelectQuery);
+    const queryBuilderConfig = {
+      ...this.config,
+      ...config,
+    };
+
+    return queryBuilder(query as SelectQuery, queryBuilderConfig);
   }
 }

@@ -60,3 +60,12 @@ export type SelectQuery<ModuleType = Record<string, unknown>> = {
   limit?: LimitClauseArgs;
   pagination?: PaginationClauseArgs;
 };
+
+export type QueryBuilderConfiguration = {
+  /**
+   * Whether to automatically alias columns to a specific supported casing.
+   *
+   * @default "none"
+   */
+  automaticColumnAliasing?: "none" | "camelCase";
+};

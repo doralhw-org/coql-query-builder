@@ -118,7 +118,9 @@ describe("Select Clause Builder", () => {
     const query: SelectClauseBuilderArgs = {
       columns: [{ column: "id", alias: "user_id" }],
       from: "Users",
-      groupByClauseExists: true,
+      config: {
+        groupByClauseExists: true,
+      },
     };
 
     const result = selectClauseBuilder(query);
@@ -130,7 +132,9 @@ describe("Select Clause Builder", () => {
     const query: SelectClauseBuilderArgs = {
       columns: ["Name"],
       from: "Users",
-      groupByClauseExists: true,
+      config: {
+        groupByClauseExists: true,
+      },
     };
 
     const result = selectClauseBuilder(query);

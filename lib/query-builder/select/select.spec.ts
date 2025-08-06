@@ -118,7 +118,9 @@ describe("Select Clause Builder", () => {
     const query: SelectClauseBuilderArgs = {
       columns: [{ column: "id", alias: "user_id" }],
       from: "Users",
-      groupByClauseExists: true,
+      config: {
+        groupByClauseExists: true,
+      },
     };
 
     const result = selectClauseBuilder(query);
@@ -130,11 +132,61 @@ describe("Select Clause Builder", () => {
     const query: SelectClauseBuilderArgs = {
       columns: ["Name"],
       from: "Users",
-      groupByClauseExists: true,
+      config: {
+        groupByClauseExists: true,
+      },
     };
 
     const result = selectClauseBuilder(query);
 
     expect(result).toEqual(["select Name from Users"]);
+  });
+
+  it("should alias columns to camel case if automatic aliasing is enabled", () => {
+    const query: SelectClauseBuilderArgs = {
+      columns: ["id", "First_Name", "Last_Name"],
+      from: "Users",
+      config: {
+        automaticColumnAliasing: "camelCase",
+      }
+    };
+
+    const result = selectClauseBuilder(query);
+
+    expect(result).toEqual([
+      "select id, First_Name as firstName, Last_Name as lastName from Users",
+    ]);
+  });
+
+  it("should alias columns to camel case if automatic aliasing is enabled and the column is not aliased already", () => {
+    const query: SelectClauseBuilderArgs = {
+      columns: ["id", "First_Name", "Last_Name", "Owner.first_name", "Owner.last_name", { column: "Owner.email", alias: "supervisorEmail" }],
+      from: "Users",
+      config: {
+        automaticColumnAliasing: "camelCase",
+      }
+    };
+
+    const result = selectClauseBuilder(query);
+
+    expect(result).toEqual([
+      "select id, First_Name as firstName, Last_Name as lastName, Owner.first_name as ownerFirstName, Owner.last_name as ownerLastName, Owner.email as supervisorEmail from Users",
+    ]);
+  });
+
+  it("should alias columns to camel case if automatic aliasing is enabled and the alias is empty", () => {
+    const query: SelectClauseBuilderArgs = {
+      columns: ["id", "First_Name", "Last_Name", "Owner.first_name", "Owner.last_name", { column: "Owner.email", alias: "  " }],
+      from: "Users",
+      config: {
+        automaticColumnAliasing: "camelCase",
+      }
+    };
+
+    const result = selectClauseBuilder(query);
+
+    expect(result).toEqual([
+      "select id, First_Name as firstName, Last_Name as lastName, Owner.first_name as ownerFirstName, Owner.last_name as ownerLastName, Owner.email as ownerEmail from Users",
+    ]);
   });
 });

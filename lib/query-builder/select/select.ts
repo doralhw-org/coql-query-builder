@@ -1,15 +1,23 @@
-import { SelectQuery } from "../../types";
+import { QueryBuilderConfiguration, SelectQuery } from "../../types";
+import { transformZohoColumnToCamelCase } from "../../utils";
+
+type SelectClauseBuilderConfig = Pick<
+  QueryBuilderConfiguration,
+  "automaticColumnAliasing"
+> & {
+  groupByClauseExists?: boolean;
+};
 
 export type SelectClauseBuilderArgs = {
   columns: SelectQuery["columns"];
   from: SelectQuery["from"];
-  groupByClauseExists?: boolean;
+  config?: SelectClauseBuilderConfig;
 };
 
 export const selectClauseBuilder = ({
   columns,
   from,
-  groupByClauseExists,
+  config,
 }: SelectClauseBuilderArgs): string[] => {
   if (columns.length === 0) {
     throw new Error("Columns to select are required.");
@@ -18,22 +26,25 @@ export const selectClauseBuilder = ({
   const selectQueryParts = [];
 
   const stringifiedColumns = columns.map((column) => {
-    if (typeof column === "string") {
-      return column;
+    const isAliasedColumn = typeof column === "object";
+
+    const columnName = isAliasedColumn ? column.column : column;
+    let alias = isAliasedColumn ? column.alias?.trim() : undefined;
+
+    if (config?.automaticColumnAliasing === "camelCase" && !alias) {
+      alias = transformZohoColumnToCamelCase(columnName);
     }
 
-    const alias = column.alias?.trim();
-
-    if (!alias) {
-      return column.column;
+    if (alias && alias !== columnName) {
+      return `${columnName} as ${alias}`;
     }
 
-    return `${column.column} as ${alias}`;
+    return columnName;
   });
 
   if (
     stringifiedColumns.find((column) => column.startsWith("id as")) &&
-    !groupByClauseExists
+    !config?.groupByClauseExists
   ) {
     throw new Error(
       "The id column cannot be aliased in queries without a group by clause."
@@ -54,7 +65,8 @@ export const selectClauseBuilder = ({
 
   while (columnsToBatch.length > 0) {
     const shouldAddIdColumn =
-      !columnsToBatch.slice(0, 50).includes(idColumn) && !groupByClauseExists;
+      !columnsToBatch.slice(0, 50).includes(idColumn) &&
+      !config?.groupByClauseExists;
 
     if (shouldAddIdColumn) {
       const batch = columnsToBatch.splice(0, 49);

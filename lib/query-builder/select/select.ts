@@ -1,7 +1,10 @@
 import { QueryBuilderConfiguration, SelectQuery } from "../../types";
 import { transformZohoColumnToCamelCase } from "../../utils";
 
-type SelectClauseBuilderConfig = QueryBuilderConfiguration & {
+type SelectClauseBuilderConfig = Pick<
+  QueryBuilderConfiguration,
+  "automaticColumnAliasing"
+> & {
   groupByClauseExists?: boolean;
 };
 
@@ -23,23 +26,20 @@ export const selectClauseBuilder = ({
   const selectQueryParts = [];
 
   const stringifiedColumns = columns.map((column) => {
-    if (typeof column === "string") {
-      return column;
+    const isAliasedColumn = typeof column === "object";
+
+    const columnName = isAliasedColumn ? column.column : column;
+    let alias = isAliasedColumn ? column.alias?.trim() : undefined;
+
+    if (config?.automaticColumnAliasing === "camelCase" && !alias) {
+      alias = transformZohoColumnToCamelCase(columnName);
     }
 
-    const alias = column.alias?.trim();
-
-    if(alias) {
-      return `${column.column} as ${alias}`;
+    if (alias && alias !== columnName) {
+      return `${columnName} as ${alias}`;
     }
 
-    if (config?.automaticColumnAliasing === "camelCase") {
-      const camelCaseAlias = transformZohoColumnToCamelCase(column.column);
-
-      return `${column.column} as ${camelCaseAlias}`;
-    }
-
-    return column.column;
+    return columnName;
   });
 
   if (
@@ -65,7 +65,8 @@ export const selectClauseBuilder = ({
 
   while (columnsToBatch.length > 0) {
     const shouldAddIdColumn =
-      !columnsToBatch.slice(0, 50).includes(idColumn) && !config?.groupByClauseExists;
+      !columnsToBatch.slice(0, 50).includes(idColumn) &&
+      !config?.groupByClauseExists;
 
     if (shouldAddIdColumn) {
       const batch = columnsToBatch.splice(0, 49);
@@ -83,4 +84,3 @@ export const selectClauseBuilder = ({
 
   return selectQueryParts;
 };
-

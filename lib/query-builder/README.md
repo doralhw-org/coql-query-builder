@@ -1,6 +1,6 @@
-# Zoho COQL Query Builder Documentation
+# Query Builder Documentation
 
-The Zoho COQL Query Builder allows you to construct complex queries for Zoho CRM using a structured TypeScript interface. This documentation covers the usage patterns, configuration structure, limitations, and implemented workarounds for each query clause.
+The COQL Query Builder allows you to construct complex queries for Zoho CRM using a structured TypeScript interface. This documentation covers the usage patterns, configuration structure, limitations, and implemented workarounds for each query clause.
 
 ## Query Structure
 
@@ -8,14 +8,14 @@ All queries follow the `SelectQuery` interface structure:
 
 ```typescript
 const query = {
-  columns: SelectClauseArgs,    // Required: columns to select
-  from: string,                 // Required: table/module name
-  where?: WhereClauseArgs,      // Optional: filtering conditions
-  groupBy?: GroupByClauseArgs,  // Optional: grouping columns
-  orderBy?: OrderByClauseArgs,  // Optional: sorting configuration
-  limit?: LimitClauseArgs,      // Optional: result limiting
-  pagination?: PaginationClauseArgs // Optional: pagination (alternative to limit)
-}
+  columns: SelectClauseArgs, // Required: columns to select
+  from: string, // Required: table/module name
+  where: WhereClauseArgs, // Optional: filtering conditions
+  groupBy: GroupByClauseArgs, // Optional: grouping columns
+  orderBy: OrderByClauseArgs, // Optional: sorting configuration
+  limit: LimitClauseArgs, // Optional: result limiting
+  pagination: PaginationClauseArgs, // Optional: pagination (alternative to limit)
+};
 ```
 
 ## Select Clause
@@ -32,14 +32,14 @@ columns: (string | { column: string; alias: string })[]
 
 ```typescript
 // Basic column selection
-columns: ["id", "Name", "Email"]
+columns: ["id", "Name", "Email"];
 
 // With column aliases
 columns: [
-  "id", 
+  "id",
   { column: "Account_Name", alias: "AccountName" },
-  { column: "Email_Address", alias: "Email" }
-]
+  { column: "Email_Address", alias: "Email" },
+];
 ```
 
 ### Limitations
@@ -51,6 +51,7 @@ columns: [
 ### Workarounds to Zoho limitations
 
 - **Column batching**: When more than 50 columns are specified, multiple sets of columns are generated with batches of up to 49 columns plus the `id` column, these get combined with one or more where clauses to create a single query.
+
 ## Where Clause
 
 Specifies filtering conditions for the query.
@@ -67,17 +68,31 @@ where: WhereCondition[]
 
 ```typescript
 // Equality
-{ equals: [{ column: "Name" }, { value: "John" }] }
-{ equals: [{ column: "Status" }, { value: null }] } // null values
+{
+  equals: [{ column: "Name" }, { value: "John" }];
+}
+{
+  equals: [{ column: "Status" }, { value: null }];
+} // null values
 
 // Numeric comparisons
-{ lessThan: [{ column: "Age" }, { value: 30 }] }
-{ lessThanOrEqual: [{ column: "Age" }, { value: 30 }] }
-{ greaterThan: [{ column: "Salary" }, { value: 50000 }] }
-{ greaterThanOrEqual: [{ column: "Salary" }, { value: 50000 }] }
+{
+  lessThan: [{ column: "Age" }, { value: 30 }];
+}
+{
+  lessThanOrEqual: [{ column: "Age" }, { value: 30 }];
+}
+{
+  greaterThan: [{ column: "Salary" }, { value: 50000 }];
+}
+{
+  greaterThanOrEqual: [{ column: "Salary" }, { value: 50000 }];
+}
 
 // Column-to-column comparisons
-{ equals: [{ column: "Start_Date" }, { column: "End_Date" }] }
+{
+  equals: [{ column: "Start_Date" }, { column: "End_Date" }];
+}
 ```
 
 #### Range and Set Conditions
@@ -115,21 +130,23 @@ where: WhereCondition[]
 {
   or: [
     { equals: [{ column: "Status" }, { value: "Active" }] },
-    { equals: [{ column: "Status" }, { value: "Pending" }] }
-  ]
+    { equals: [{ column: "Status" }, { value: "Pending" }] },
+  ];
 }
 
 // AND conditions (default behavior, but can be explicit)
 {
   and: [
     { greaterThan: [{ column: "Age" }, { value: 18 }] },
-    { lessThan: [{ column: "Age" }, { value: 65 }] }
-  ]
+    { lessThan: [{ column: "Age" }, { value: 65 }] },
+  ];
 }
 
 // NOT operator
 {
-  not: { equals: [{ column: "Status" }, { value: "Inactive" }] }
+  not: {
+    equals: [{ column: "Status" }, { value: "Inactive" }];
+  }
 }
 ```
 
@@ -137,7 +154,9 @@ where: WhereCondition[]
 
 ```typescript
 // For complex conditions not covered by typed conditions
-{ raw: "Modified_Time > '2023-01-01'" }
+{
+  raw: "Modified_Time > '2023-01-01'";
+}
 ```
 
 ### Limitations
@@ -160,7 +179,8 @@ Specifies the sorting order for query results.
 orderBy: {
   column: string;
   direction: "asc" | "desc";
-}[]
+}
+[];
 ```
 
 ### Example
@@ -169,8 +189,8 @@ orderBy: {
 orderBy: [
   { column: "Name", direction: "asc" },
   { column: "Created_Time", direction: "desc" },
-  { column: "Age", direction: "asc" }
-]
+  { column: "Age", direction: "asc" },
+];
 ```
 
 ### Limitations
@@ -191,7 +211,7 @@ groupBy: string[]
 ### Example
 
 ```typescript
-groupBy: ["Department", "Status"]
+groupBy: ["Department", "Status"];
 ```
 
 ### Limitations
@@ -223,7 +243,7 @@ limit: {
 
 ```typescript
 pagination: {
-  page: number;     // page number (1-based)
+  page: number; // page number (1-based)
   pageSize: number; // items per page (1-2000)
 }
 ```
@@ -270,6 +290,6 @@ interface Contact {
 
 const query: SelectQuery<Contact> = {
   columns: ["id", "Name"], // TypeScript will suggest available columns
-  from: "Contacts"
-}
+  from: "Contacts",
+};
 ```

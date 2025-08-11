@@ -1,6 +1,6 @@
 {
-  "name": "@doralhw-org/zoho-coql-query-builder",
-  "version": "0.2.1",
+  "name": "@doralhw-org/coql-query-builder",
+  "version": "0.1.0",
   "description": "A lightweight query builder for Zoho CRM that abstracts the COQL queries and provides a fluent API for building them.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,11 +18,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/doralhw-org/zoho-coql-query-builder.git"
+    "url": "https://github.com/doralhw-org/coql-query-builder.git"
   },
-  "homepage": "https://github.com/doralhw-org/zoho-coql-query-builder#readme",
+  "homepage": "https://github.com/doralhw-org/coql-query-builder#readme",
   "bugs": {
-    "url": "https://github.com/doralhw-org/zoho-coql-query-builder/issues"
+    "url": "https://github.com/doralhw-org/coql-query-builder/issues"
   },
   "scripts": {
     "build": "pnpm run clean && tsc -p tsconfig.build.json",

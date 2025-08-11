@@ -2,6 +2,8 @@
 
 A lightweight query builder for Zoho CRM that abstracts the COQL queries and provides a fluent API for building them.
 
+This library is an independent open-source project and is not affiliated with or endorsed by Zoho Corporation. ‘Zoho’ is trademarks of Zoho Corporation, used here only to describe compatibility.
+
 ## Installation
 
 ```bash

@@ -1,24 +1,24 @@
 import { queryBuilder } from "./query-builder";
+import { CrmCoqlQueryFunction, CrmCoqlRecord } from "./types/crm";
 import { QueryBuilderConfiguration, SelectQuery } from "./types/query";
-import { ZohoCrmCoqlQueryFunction, ZohoCrmCoqlRecord } from "./types/zoho";
 
-type ZohoCoqlQueryBuilderArgs = {
-  queryFunction: ZohoCrmCoqlQueryFunction;
+type CoqlQueryBuilderArgs = {
+  queryFunction: CrmCoqlQueryFunction;
   config?: QueryBuilderConfiguration;
 };
 
 /**
- * Zoho COQL Query Builder
+ * COQL Query Builder
  *
  * This class provides a simple query builder for interacting with Zoho CRM using COQL queries.
  * It allows you to build and execute complex queries, and return the results as an array of records.
  *
  * @example
- * const zohoCoqlQueryBuilder = new ZohoCoqlQueryBuilder({
- *   queryFunction: queryZohoCrm,
+ * const coqlQueryBuilder = new CoqlQueryBuilder({
+ *   queryFunction: queryCrm,
  * });
  *
- * const records = await zohoCoqlQueryBuilder.select({
+ * const records = await coqlQueryBuilder.select({
  *   columns: ["id", "name"],
  *   from: "Users",
  *   where: [
@@ -26,11 +26,11 @@ type ZohoCoqlQueryBuilderArgs = {
  *   ],
  * });
  */
-export class ZohoCoqlQueryBuilder {
-  private readonly queryFunction: ZohoCrmCoqlQueryFunction;
+export class CoqlQueryBuilder {
+  private readonly queryFunction: CrmCoqlQueryFunction;
   private readonly config?: QueryBuilderConfiguration;
 
-  constructor(args: ZohoCoqlQueryBuilderArgs) {
+  constructor(args: CoqlQueryBuilderArgs) {
     this.queryFunction = args.queryFunction;
     this.config = args.config;
   }
@@ -51,8 +51,8 @@ export class ZohoCoqlQueryBuilder {
    * @returns An array of records from Zoho CRM
    */
   async select<
-    ModuleType extends ZohoCrmCoqlRecord = ZohoCrmCoqlRecord,
-    RecordType extends Partial<ZohoCrmCoqlRecord> = ZohoCrmCoqlRecord
+    ModuleType extends CrmCoqlRecord = CrmCoqlRecord,
+    RecordType extends Partial<CrmCoqlRecord> = CrmCoqlRecord
   >(query: SelectQuery<ModuleType>, config?: QueryBuilderConfiguration): Promise<RecordType[]> {
     const coqlQueries = this.buildQuery(query, config);
 
@@ -99,7 +99,7 @@ export class ZohoCoqlQueryBuilder {
    * @param query - The query to build
    * @returns An array of COQL queries
    */
-  buildQuery<ModuleType extends ZohoCrmCoqlRecord = ZohoCrmCoqlRecord>(
+  buildQuery<ModuleType extends CrmCoqlRecord = CrmCoqlRecord>(
     query: SelectQuery<ModuleType>,
     config?: QueryBuilderConfiguration
   ): string[] {

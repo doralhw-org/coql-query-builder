@@ -1,5 +1,5 @@
 import { QueryBuilderConfiguration, SelectQuery } from "../../types";
-import { transformZohoColumnToCamelCase } from "../../utils";
+import { transformCrmColumnToCamelCase } from "../../utils";
 
 type SelectClauseBuilderConfig = Pick<
   QueryBuilderConfiguration,
@@ -32,7 +32,7 @@ export const selectClauseBuilder = ({
     let alias = isAliasedColumn ? column.alias?.trim() : undefined;
 
     if (config?.automaticColumnAliasing === "camelCase" && !alias) {
-      alias = transformZohoColumnToCamelCase(columnName);
+      alias = transformCrmColumnToCamelCase(columnName);
     }
 
     if (alias && alias !== columnName) {

@@ -1,11 +1,13 @@
-# Zoho COQL Query Builder
+# COQL Query Builder
 
 A lightweight query builder for Zoho CRM that abstracts the COQL queries and provides a fluent API for building them.
+
+This library is an independent open-source project and is not affiliated with or endorsed by Zoho Corporation. ‘Zoho’ is trademarks of Zoho Corporation, used here only to describe compatibility.
 
 ## Installation
 
 ```bash
-npm install @doralhw-org/zoho-coql-query-builder
+npm install @doralhw-org/coql-query-builder
 ```
 
 ## Usage
@@ -14,10 +16,10 @@ You'll need to create a object of the query builder and pass it a function that 
 This function must return the data in the same format as the Zoho CRM API response.
 
 ```ts
-import { ZohoCoqlQueryBuilder } from "@doralhw-org/zoho-coql-query-builder";
+import { CoqlQueryBuilder } from "@doralhw-org/coql-query-builder";
 
-const zohoCoqlQueryBuilder = new ZohoCoqlQueryBuilder({
-  queryFunction: queryZohoCrm,
+const coqlQueryBuilder = new CoqlQueryBuilder({
+  queryFunction: queryCrm,
 });
 ```
 
@@ -27,7 +29,7 @@ After creating the query builder object you can use the `select` method to fetch
 to one or more COQL queries and executed. The data will then be merged together and returned as an array of records.
 
 ```ts
-const records = await zohoCoqlQueryBuilder.select({
+const records = await coqlQueryBuilder.select({
   columns: [
     "id",
     "Name",
@@ -48,7 +50,7 @@ column, you may alias the column to `id` .
 Alternatively, you can use the static `buildQuery` method to build the query and then execute it on your own. The method will return one or more COQL queries depending on the workarounds required to obtain the data based on the limitations of the Zoho CRM API.
 
 ```ts
-const queries = ZohoCoqlQueryBuilder.buildQuery({
+const queries = coqlQueryBuilder.buildQuery({
   columns: [
     "id",
     "Name",

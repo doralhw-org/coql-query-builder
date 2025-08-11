@@ -1,13 +1,13 @@
 /**
- * Transforms a Zoho API Column name to camelCase.
+ * Transforms a CRM API Column name to camelCase.
  * 
  * @example
  * ```ts
- * transformZohoColumnToCamelCase("First_Name") // "firstName"
- * transformZohoColumnToCamelCase("Owner.id") // "ownerId"
+ * transformCrmColumnToCamelCase("First_Name") // "firstName"
+ * transformCrmColumnToCamelCase("Owner.id") // "ownerId"
  * ```
  */
-export const transformZohoColumnToCamelCase = (column: string): string => {
+export const transformCrmColumnToCamelCase = (column: string): string => {
   return column
     .replace(/\./g, '_')
     .split('_')

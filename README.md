@@ -12,8 +12,7 @@ npm install @doralhw-org/coql-query-builder
 
 ## Usage
 
-You'll need to create a object of the query builder and pass it a function that can fetch the data with the provided query.
-This function must return the data in the same format as the Zoho CRM API response.
+You'll need to create a object of the query builder and pass it a function that can fetch the data with the provided query. This function must return the data in the same format as the Zoho CRM API response.
 
 ```ts
 import { CoqlQueryBuilder } from "@doralhw-org/coql-query-builder";
@@ -25,8 +24,7 @@ const coqlQueryBuilder = new CoqlQueryBuilder({
 
 ### Fetching data
 
-After creating the query builder object you can use the `select` method to fetch the data. The query passed will then be turned
-to one or more COQL queries and executed. The data will then be merged together and returned as an array of records.
+After creating the query builder object you can use the `select` method to fetch the data. The query passed will then be turned to one or more COQL queries and executed. The data will then be merged together and returned as an array of records.
 
 ```ts
 const records = await coqlQueryBuilder.select({
@@ -43,11 +41,9 @@ const records = await coqlQueryBuilder.select({
 });
 ```
 
-This merge is performed based on the `id` column. If the `id` column is not added as a column to the query, it will be added
-to the queries generated. If the `id` column has a different name, or you want to group based on a different identifier
-column, you may alias the column to `id` .
+This merge is performed based on the `id` column. If the `id` column is not added as a column to the query, it will be added to the queries generated. If the `id` column has a different name, or you want to group based on a different identifier column, you may alias the column to `id` .
 
-Alternatively, you can use the static `buildQuery` method to build the query and then execute it on your own. The method will return one or more COQL queries depending on the workarounds required to obtain the data based on the limitations of the Zoho CRM API.
+Alternatively, you can use the `buildQuery` method to build the query and then execute it on your own. The method will return one or more COQL queries depending on the workarounds required to obtain the data based on the limitations of the Zoho CRM API.
 
 ```ts
 const queries = coqlQueryBuilder.buildQuery({

@@ -68,4 +68,11 @@ export type QueryBuilderConfiguration = {
    * @default "none"
    */
   automaticColumnAliasing?: "none" | "camelCase";
+  /**
+   * Adds metadata coming from Zoho to the query. Turning it from an array of records to an object with a "data" and "info" property.
+   * If deduplication occurs, the more_records property will be true if any of the responses has more_records set to true.
+   *
+   * @default false
+   */
+  includeMetadata?: boolean;
 };

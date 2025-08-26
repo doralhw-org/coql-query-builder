@@ -5,10 +5,12 @@ export type CrmCoqlRecord = {
 
 export type CrmCoqlResponse<RecordType = CrmCoqlRecord> = {
   data: RecordType[];
-  info: {
-    count: number;
-    more_records: boolean;
-  };
+  info: CrmCoqlQueryMetadata;
+};
+
+export type CrmCoqlQueryMetadata = {
+  count: number;
+  more_records: boolean;
 };
 
 /**

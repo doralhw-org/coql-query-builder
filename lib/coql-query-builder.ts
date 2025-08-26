@@ -1,10 +1,19 @@
 import { queryBuilder } from "./query-builder";
-import { CrmCoqlQueryFunction, CrmCoqlRecord } from "./types/crm";
+import {
+  CrmCoqlQueryFunction,
+  CrmCoqlRecord,
+  CrmCoqlResponse,
+} from "./types/crm";
 import { QueryBuilderConfiguration, SelectQuery } from "./types/query";
+
+export type CoqlQueryBuilderConfiguration = Omit<
+  QueryBuilderConfiguration,
+  "includeMetadata"
+>;
 
 type CoqlQueryBuilderArgs = {
   queryFunction: CrmCoqlQueryFunction;
-  config?: QueryBuilderConfiguration;
+  config?: CoqlQueryBuilderConfiguration;
 };
 
 /**
@@ -28,12 +37,29 @@ type CoqlQueryBuilderArgs = {
  */
 export class CoqlQueryBuilder {
   private readonly queryFunction: CrmCoqlQueryFunction;
-  private readonly config?: QueryBuilderConfiguration;
+  private readonly config?: CoqlQueryBuilderConfiguration;
 
   constructor(args: CoqlQueryBuilderArgs) {
     this.queryFunction = args.queryFunction;
     this.config = args.config;
   }
+
+  /* Overloads for return value type changes based on configuration */
+  async select<
+    ModuleType extends CrmCoqlRecord = CrmCoqlRecord,
+    RecordType extends Partial<CrmCoqlRecord> = CrmCoqlRecord
+  >(
+    query: SelectQuery<ModuleType>,
+    config: QueryBuilderConfiguration & { includeMetadata: true }
+  ): Promise<CrmCoqlResponse<RecordType>>;
+
+  async select<
+    ModuleType extends CrmCoqlRecord = CrmCoqlRecord,
+    RecordType extends Partial<CrmCoqlRecord> = CrmCoqlRecord
+  >(
+    query: SelectQuery<ModuleType>,
+    config?: QueryBuilderConfiguration & { includeMetadata?: false }
+  ): Promise<RecordType[]>;
 
   /**
    * Select records from Zoho CRM
@@ -53,8 +79,16 @@ export class CoqlQueryBuilder {
   async select<
     ModuleType extends CrmCoqlRecord = CrmCoqlRecord,
     RecordType extends Partial<CrmCoqlRecord> = CrmCoqlRecord
-  >(query: SelectQuery<ModuleType>, config?: QueryBuilderConfiguration): Promise<RecordType[]> {
-    const coqlQueries = this.buildQuery(query, config);
+  >(
+    query: SelectQuery<ModuleType>,
+    config?: QueryBuilderConfiguration
+  ): Promise<RecordType[] | CrmCoqlResponse<RecordType>> {
+    const effectiveConfig = {
+      ...this.config,
+      ...config,
+    };
+
+    const coqlQueries = this.buildQuery(query, effectiveConfig);
 
     const responses = await Promise.all(
       coqlQueries.map((coqlQuery) => this.queryFunction<RecordType>(coqlQuery))
@@ -67,20 +101,37 @@ export class CoqlQueryBuilder {
 
     // If there is only one query, return the data directly as there is no need to deduplicate or merge partial records
     if (coqlQueries.length === 1) {
-      return responsesData;
+      return effectiveConfig?.includeMetadata ? responses[0] : responsesData;
     }
 
     // Deduplication and partial record merging
     const recordDictionary = responsesData.reduce<Record<string, RecordType>>(
       (acc, currentRecord) => {
-        acc[currentRecord.id!] = { ...acc[currentRecord.id!], ...currentRecord };
+        acc[currentRecord.id!] = {
+          ...acc[currentRecord.id!],
+          ...currentRecord,
+        };
 
         return acc;
       },
       {}
     );
 
-    return Object.values(recordDictionary);
+    const records = Object.values(recordDictionary);
+
+    if (effectiveConfig?.includeMetadata) {
+      return {
+        data: records,
+        info: {
+          count: records.length,
+          more_records: responses.some(
+            (response) => response.info.more_records
+          ),
+        },
+      };
+    }
+
+    return records;
   }
 
   /**
@@ -103,11 +154,11 @@ export class CoqlQueryBuilder {
     query: SelectQuery<ModuleType>,
     config?: QueryBuilderConfiguration
   ): string[] {
-    const queryBuilderConfig = {
+    const effectiveConfig = {
       ...this.config,
       ...config,
     };
 
-    return queryBuilder(query as SelectQuery, queryBuilderConfig);
+    return queryBuilder(query as SelectQuery, effectiveConfig);
   }
 }

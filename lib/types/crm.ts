@@ -16,8 +16,8 @@ export type CrmCoqlQueryMetadata = {
 /**
  * This is the function type that must be provided to the CoqlQueryBuilder constructor.
  *
- * It must receive directly a COQL query string and return a CrmCoqlResponse object.
+ * It must receive directly a COQL query string and return zoho's response.
  */
 export type CrmCoqlQueryFunction = <RecordType = CrmCoqlRecord>(
   coqlQuery: string
-) => Promise<CrmCoqlResponse<RecordType>>;
+) => Promise<CrmCoqlResponse<RecordType> | "">;

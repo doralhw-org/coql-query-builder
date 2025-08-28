@@ -6,9 +6,9 @@ jest.mock("./query-builder");
 describe("COQL Query Builder Class", () => {
   const mockQueryBuilder = jest.mocked(queryBuilder);
   const mockQueryFunction = jest.fn().mockResolvedValue({
-    data: [],
+    data: [{ id: "1", First_Name: "John" }],
     info: {
-      count: 0,
+      count: 1,
       more_records: false,
     },
   });
@@ -29,7 +29,7 @@ describe("COQL Query Builder Class", () => {
       from: "users",
     });
 
-    expect(records).toEqual([]);
+    expect(records).toEqual([{ id: "1", First_Name: "John" }]);
   });
 
   it("should deduplicate records", async () => {
@@ -89,9 +89,9 @@ describe("COQL Query Builder Class", () => {
     );
 
     expect(records).toEqual({
-      data: [],
+      data: [{ id: "1", First_Name: "John" }],
       info: {
-        count: 0,
+        count: 1,
         more_records: false,
       },
     });
@@ -197,5 +197,111 @@ describe("COQL Query Builder Class", () => {
     });
 
     expect(queries).toEqual(mockQueries);
+  });
+
+  it("should return an empty array when no results are returned", async () => {
+    mockQueryFunction.mockResolvedValue("");
+
+    const builder = new CoqlQueryBuilder({
+      queryFunction: mockQueryFunction,
+    });
+
+    const records = await builder.select({
+      columns: ["id", "First_Name"],
+      from: "users",
+    });
+
+    expect(records).toEqual([]);
+  });
+
+  it("should return an empty array when no results are returned with metadata", async () => {
+    mockQueryFunction.mockResolvedValue("");
+
+    const builder = new CoqlQueryBuilder({
+      queryFunction: mockQueryFunction,
+    });
+
+    const records = await builder.select(
+      {
+        columns: ["id", "First_Name"],
+        from: "users",
+      },
+      {
+        includeMetadata: true,
+      }
+    );
+
+    expect(records).toEqual({
+      data: [],
+      info: {
+        count: 0,
+        more_records: false,
+      },
+    });
+  });
+
+  it("should ignore empty string results when deduplicating", async () => {
+    mockQueryFunction.mockResolvedValueOnce("");
+    mockQueryFunction.mockResolvedValueOnce({
+      data: [{ id: "2", First_Name: "John" }],
+      info: {
+        count: 1,
+        more_records: false,
+      },
+    });
+
+    mockQueryBuilder.mockReturnValue([
+      "select id, First_Name from users where id in (1)",
+      "select id, First_Name from users where id in (2)",
+    ]);
+
+    const builder = new CoqlQueryBuilder({
+      queryFunction: mockQueryFunction,
+    });
+
+    const records = await builder.select({
+      columns: ["id", "First_Name"],
+      from: "users",
+    });
+
+    expect(records).toEqual([{ id: "2", First_Name: "John" }]);
+  });
+
+  it("should ignore empty string results when deduplicating with metadata", async () => {
+    mockQueryFunction.mockResolvedValueOnce("");
+    mockQueryFunction.mockResolvedValueOnce({
+      data: [{ id: "2", First_Name: "John" }],
+      info: {
+        count: 1,
+        more_records: false,
+      },
+    });
+
+    mockQueryBuilder.mockReturnValue([
+      "select id, First_Name from users where id in (1)",
+      "select id, First_Name from users where id in (2)",
+    ]);
+
+    const builder = new CoqlQueryBuilder({
+      queryFunction: mockQueryFunction,
+    });
+
+    const records = await builder.select(
+      {
+        columns: ["id", "First_Name"],
+        from: "users",
+      },
+      {
+        includeMetadata: true,
+      }
+    );
+
+    expect(records).toEqual({
+      data: [{ id: "2", First_Name: "John" }],
+      info: {
+        count: 1,
+        more_records: false,
+      },
+    });
   });
 });

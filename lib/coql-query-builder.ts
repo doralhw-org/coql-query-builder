@@ -90,18 +90,36 @@ export class CoqlQueryBuilder {
 
     const coqlQueries = this.buildQuery(query, effectiveConfig);
 
-    const responses = await Promise.all(
-      coqlQueries.map((coqlQuery) => this.queryFunction<RecordType>(coqlQuery))
-    );
+    const responses = (
+      await Promise.all(
+        coqlQueries.map((coqlQuery) =>
+          this.queryFunction<RecordType>(coqlQuery)
+        )
+      )
+    ).filter((response) => response !== ""); // Filter out empty string responses
 
     const responsesData = responses
-      .map((response) => response.data)
+      .map((response) => {
+        return response.data;
+      })
       .flat()
       .filter(Boolean);
 
     // If there is only one query, return the data directly as there is no need to deduplicate or merge partial records
-    if (coqlQueries.length === 1) {
-      return effectiveConfig?.includeMetadata ? responses[0] : responsesData;
+    if (coqlQueries.length === 1 && !effectiveConfig?.includeMetadata) {
+      return responsesData;
+    }
+
+    if (coqlQueries.length === 1 && effectiveConfig?.includeMetadata) {
+      return {
+        data: responsesData,
+        info: {
+          count: responsesData.length,
+          more_records: responses.some(
+            (response) => response.info.more_records
+          ),
+        },
+      };
     }
 
     // Deduplication and partial record merging
